@@ -1,0 +1,363 @@
+{
+  "test_lines": 2000,
+  "gold_spans": 3829,
+  "match_rule": "same label, character Jaccard >= 0.5",
+  "split": "held-out templates and name/street/city pools",
+  "modes": {
+    "regex": {
+      "overall": {
+        "tp": 2754,
+        "fp": 609,
+        "fn": 1075,
+        "precision": 0.8189116859946476,
+        "recall": 0.7192478453904414,
+        "f1": 0.7658509454949943
+      },
+      "by_label": {
+        "NAME": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 1034,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "EMAIL": {
+          "tp": 610,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "PHONE": {
+          "tp": 577,
+          "fp": 393,
+          "fn": 0,
+          "precision": 0.5948453608247423,
+          "recall": 1.0,
+          "f1": 0.7459599224305106
+        },
+        "ADDRESS": {
+          "tp": 612,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "CARD": {
+          "tp": 216,
+          "fp": 202,
+          "fn": 0,
+          "precision": 0.5167464114832536,
+          "recall": 1.0,
+          "f1": 0.6813880126182965
+        },
+        "SSN": {
+          "tp": 194,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "IP": {
+          "tp": 394,
+          "fp": 14,
+          "fn": 0,
+          "precision": 0.9656862745098039,
+          "recall": 1.0,
+          "f1": 0.9825436408977556
+        },
+        "API_KEY": {
+          "tp": 151,
+          "fp": 0,
+          "fn": 41,
+          "precision": 1.0,
+          "recall": 0.7864583333333334,
+          "f1": 0.880466472303207
+        }
+      }
+    },
+    "model": {
+      "overall": {
+        "tp": 3826,
+        "fp": 224,
+        "fn": 3,
+        "precision": 0.9446913580246914,
+        "recall": 0.999216505615043,
+        "f1": 0.9711892372128442
+      },
+      "by_label": {
+        "NAME": {
+          "tp": 1034,
+          "fp": 2,
+          "fn": 0,
+          "precision": 0.9980694980694981,
+          "recall": 1.0,
+          "f1": 0.9990338164251207
+        },
+        "EMAIL": {
+          "tp": 610,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "PHONE": {
+          "tp": 577,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "ADDRESS": {
+          "tp": 612,
+          "fp": 4,
+          "fn": 0,
+          "precision": 0.9935064935064936,
+          "recall": 1.0,
+          "f1": 0.9967426710097721
+        },
+        "CARD": {
+          "tp": 213,
+          "fp": 22,
+          "fn": 3,
+          "precision": 0.9063829787234042,
+          "recall": 0.9861111111111112,
+          "f1": 0.9445676274944567
+        },
+        "SSN": {
+          "tp": 194,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "IP": {
+          "tp": 394,
+          "fp": 4,
+          "fn": 0,
+          "precision": 0.9899497487437185,
+          "recall": 1.0,
+          "f1": 0.9949494949494949
+        },
+        "API_KEY": {
+          "tp": 192,
+          "fp": 192,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666
+        }
+      }
+    },
+    "combined": {
+      "overall": {
+        "tp": 3828,
+        "fp": 2,
+        "fn": 1,
+        "precision": 0.9994778067885117,
+        "recall": 0.9997388352050144,
+        "f1": 0.9996083039561301
+      },
+      "by_label": {
+        "NAME": {
+          "tp": 1034,
+          "fp": 2,
+          "fn": 0,
+          "precision": 0.9980694980694981,
+          "recall": 1.0,
+          "f1": 0.9990338164251207
+        },
+        "EMAIL": {
+          "tp": 610,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "PHONE": {
+          "tp": 577,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "ADDRESS": {
+          "tp": 612,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "CARD": {
+          "tp": 216,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SSN": {
+          "tp": 194,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "IP": {
+          "tp": 394,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "API_KEY": {
+          "tp": 191,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.9947916666666666,
+          "f1": 0.9973890339425587
+        }
+      }
+    }
+  },
+  "local_model_lines_per_s": 151.9,
+  "examples": {
+    "model_wins": [
+      {
+        "text": "2026-10-14T06:38:02Z NOTICE mailer: bounced message to dduskmoor@mail.example.net (recipient Juniper Szabo)",
+        "span": {
+          "start": 93,
+          "end": 106,
+          "label": "NAME",
+          "source": "model",
+          "text": "Juniper Szabo"
+        }
+      },
+      {
+        "text": "2026-10-14T08:57:02Z {\"msg\":\"invoice sent\",\"customer\":\"Gideon Esterhazy\",\"bill_to\":\"6457 Saltmarsh Ave, Kettle Bay, WA 81326\",\"ref\":\"1639090651\"}",
+        "span": {
+          "start": 55,
+          "end": 71,
+          "label": "NAME",
+          "source": "model",
+          "text": "Gideon Esterhazy"
+        }
+      },
+      {
+        "text": "2026-10-14T05:15:14Z NOTICE mailer: bounced message to blackwoodito+orders@shop.test (recipient Gideon Merriweather)",
+        "span": {
+          "start": 96,
+          "end": 115,
+          "label": "NAME",
+          "source": "model",
+          "text": "Gideon Merriweather"
+        }
+      },
+      {
+        "text": "2026-10-14T21:35:11Z NOTICE mailer: bounced message to ghargreave@corp.test (recipient Magnus Merriweather)",
+        "span": {
+          "start": 87,
+          "end": 106,
+          "label": "NAME",
+          "source": "model",
+          "text": "Magnus Merriweather"
+        }
+      },
+      {
+        "text": "2026-10-14T21:14:20Z ERROR crm-sync: could not reach Ignatius Blackwood-Ito at +1 312 555 0163; falling back to blackwoodito+orders@shop.test",
+        "span": {
+          "start": 53,
+          "end": 75,
+          "label": "NAME",
+          "source": "model",
+          "text": "Ignatius Blackwood-Ito"
+        }
+      },
+      {
+        "text": "2026-10-14T23:06:03Z ERROR ledger: chargeback on 378282246310005 disputed by Rafferty Vanterpool; case fb88a9438e91dbe3",
+        "span": {
+          "start": 77,
+          "end": 96,
+          "label": "NAME",
+          "source": "model",
+          "text": "Rafferty Vanterpool"
+        }
+      }
+    ],
+    "validator_saves": [
+      {
+        "text": "2026-10-14T03:42:51Z {\"lvl\":\"warn\",\"component\":\"courier\",\"dest\":\"1448 Harbor Light Rd, Kettle Bay, WA 23077\",\"contact\":\"212-555-0123\",\"parcel\":\"1064536728405895\"}",
+        "span": {
+          "start": 144,
+          "end": 160,
+          "label": "CARD",
+          "source": "regex",
+          "text": "1064536728405895"
+        }
+      },
+      {
+        "text": "2026-10-14T10:54:06Z INFO updater: rolled out client 2.1.45.844 to 3 regions",
+        "span": {
+          "start": 53,
+          "end": 63,
+          "label": "IP",
+          "source": "regex",
+          "text": "2.1.45.844"
+        }
+      },
+      {
+        "text": "2026-10-14T08:57:02Z {\"msg\":\"invoice sent\",\"customer\":\"Gideon Esterhazy\",\"bill_to\":\"6457 Saltmarsh Ave, Kettle Bay, WA 81326\",\"ref\":\"1639090651\"}",
+        "span": {
+          "start": 133,
+          "end": 143,
+          "label": "PHONE",
+          "source": "regex",
+          "text": "1639090651"
+        }
+      },
+      {
+        "text": "2026-10-14T21:18:25Z {\"lvl\":\"warn\",\"component\":\"courier\",\"dest\":\"2005 Foxglove Rd, Redstone Mills, NC 90811\",\"contact\":\"312.555.0182\",\"parcel\":\"9606774347254989\"}",
+        "span": {
+          "start": 144,
+          "end": 160,
+          "label": "CARD",
+          "source": "regex",
+          "text": "9606774347254989"
+        }
+      },
+      {
+        "text": "2026-10-14T16:54:40Z INFO updater: rolled out client 8.21.4.758 to 3 regions",
+        "span": {
+          "start": 53,
+          "end": 63,
+          "label": "IP",
+          "source": "regex",
+          "text": "8.21.4.758"
+        }
+      },
+      {
+        "text": "2026-10-14T07:52:13Z {\"msg\":\"invoice sent\",\"customer\":\"Cassius Vanterpool\",\"bill_to\":\"3722 Foxglove Way, Kettle Bay, WA 78467\",\"ref\":\"0385444819\"}",
+        "span": {
+          "start": 134,
+          "end": 144,
+          "label": "PHONE",
+          "source": "regex",
+          "text": "0385444819"
+        }
+      }
+    ]
+  }
+}
