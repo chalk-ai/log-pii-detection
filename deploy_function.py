@@ -23,6 +23,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 MODEL_DIR = "/models/log-pii"
+PII_DIR = "/opt/log_pii"
 _tagger: list = []
 _load_lock = threading.Lock()
 _infer_lock = threading.Lock()
@@ -30,6 +31,11 @@ _infer_lock = threading.Lock()
 
 def log_pii_redact(line: str) -> str:
     """Tag PII in one log line; returns JSON with the redacted line, spans and per-entity counts."""
+    import sys
+
+    # The function build owns /app (handler.py, user_module.py), so pii.py ships under /opt.
+    if PII_DIR not in sys.path:
+        sys.path.insert(0, PII_DIR)
     from pii import Tagger, detect, redact
 
     if not _tagger:
@@ -72,7 +78,7 @@ def main() -> None:
         Image.debian_slim(python_version="3.12")
         .run_commands("pip install --no-cache-dir torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu")
         .pip_install(["transformers==4.56.2"])
-        .add_local_file(str(HERE / "pii.py"), "/app/pii.py", strategy="copy")
+        .add_local_file(str(HERE / "pii.py"), f"{PII_DIR}/pii.py", strategy="copy")
         .add_local_dir(str(args.model_dir), MODEL_DIR, strategy="volume")
     )
     name = "log-pii-redact"
@@ -82,7 +88,7 @@ def main() -> None:
             name=name,
             cpu="2",
             memory="4Gi",
-            env={"PYTHONPATH": "/app", "MALLOC_ARENA_MAX": "2", "OMP_NUM_THREADS": "2"},
+            env={"MALLOC_ARENA_MAX": "2", "OMP_NUM_THREADS": "2"},
             min_replicas=1,
             max_replicas=2,
             max_batching_size=64,

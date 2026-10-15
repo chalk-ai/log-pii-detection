@@ -51,9 +51,7 @@ SELECT ts, service,
        json_format(json_extract(r, '$.counts')) AS entities
 FROM (
   SELECT ts, service, catalog_call('function.log-pii-redact', message) AS r
-  FROM '@TABLE@'
-  ORDER BY ts
-  LIMIT 25
+  FROM (SELECT ts, service, message FROM '@TABLE@' ORDER BY ts LIMIT 25)
 )
 ORDER BY ts""",
     "by_service": """
@@ -262,7 +260,7 @@ async def sql(req: SqlRequest, request: Request) -> dict:
             result = await asyncio.to_thread(ChalkSql().query, query)
         except Exception as exc:
             raise HTTPException(502, f"ChalkSQL query failed: {str(exc)[:200]}") from exc
-    result = {**result, "sql": SQL_PRESETS[req.preset].strip().replace("@TABLE@", "app_logs")}
+    result = {**result, "sql": SQL_PRESETS[req.preset].strip().replace("'@TABLE@'", "app_logs")}
     state.sql_cache[req.preset] = (time.time(), result)
     return {**result, "cached": False}
 
