@@ -7,8 +7,8 @@
 """Deploy the /demos/log-pii-detection backend (server.py) as a ScalingGroup.
 
 The app runs the same tagger in-process for the live tail and the paste box, and calls ChalkSQL
-(which calls `function.log-pii-redact`) for the log-table queries. Chalk credentials are passed as
-Chalk secrets, never baked into the image:
+(which calls `function.log-pii-redact`) for the log-table queries. The app authenticates with its own
+Chalk workload identity:
 
     ./deploy.py --model-dir model/ --table-uri gs://<bucket>/demos/log-pii-detection/app_logs.parquet
 """
@@ -16,25 +16,25 @@ Chalk secrets, never baked into the image:
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import pathlib
-import subprocess
 
 HERE = pathlib.Path(__file__).resolve().parent
 MODEL_DIR = "/models/log-pii"
 
 
-def load_chalk_env(env_id: str | None) -> str:
-    cfg = json.loads(subprocess.check_output(["chalk", "config", "--json"]))
-    os.environ.setdefault("CHALK_API_SERVER", cfg["apiServer"]["value"])
-    os.environ.setdefault("CHALK_CLIENT_ID", cfg["clientId"]["value"])
-    os.environ.setdefault("CHALK_CLIENT_SECRET", cfg["clientSecret"]["value"])
-    os.environ["CHALK_ENVIRONMENT_ID"] = env_id or cfg["environment"]["value"]
-    # Distinct local names, so the upserted Chalk secrets do not collide with other workloads.
-    os.environ["LOG_PII_CLIENT_ID"] = os.environ["CHALK_CLIENT_ID"]
-    os.environ["LOG_PII_CLIENT_SECRET"] = os.environ["CHALK_CLIENT_SECRET"]
-    return os.environ["CHALK_ENVIRONMENT_ID"]
+def load_chalk_env(env_id: str | None) -> None:
+    from chalkcompute import ConnectClient
+
+    if env_id:
+        os.environ["CHALK_ENVIRONMENT"] = env_id
+    client = ConnectClient()
+    try:
+        client._ensure_auth()
+        os.environ["CHALK_API_SERVER"] = client._api_server
+        os.environ["CHALK_ENVIRONMENT_ID"] = client._env_id
+    finally:
+        client.close()
 
 
 def main() -> None:
@@ -46,8 +46,9 @@ def main() -> None:
     parser.add_argument("--ready-timeout", type=float, default=1200.0)
     args = parser.parse_args()
 
-    env_id = load_chalk_env(args.env_id)
-    from chalkcompute import Image, ReadinessProbe, ScalingGroup, Secret
+    load_chalk_env(args.env_id)
+    env_id = os.environ["CHALK_ENVIRONMENT_ID"]
+    from chalkcompute import Image, ReadinessProbe, ScalingGroup
 
     image = (
         Image.debian_slim(python_version="3.12")
@@ -58,6 +59,7 @@ def main() -> None:
                 "fastapi==0.116.1",
                 "uvicorn[standard]==0.35.0",
                 "httpx==0.28.1",
+                "chalkcompute==2.13.5",
                 "pyarrow==21.0.0",
             ]
         )
@@ -85,12 +87,9 @@ def main() -> None:
             "MALLOC_ARENA_MAX": "2",
             "PORT": "8080",
         },
-        secrets=[
-            Secret.from_local_env("LOG_PII_CLIENT_ID", env_var_name="CHALK_CLIENT_ID"),
-            Secret.from_local_env("LOG_PII_CLIENT_SECRET", env_var_name="CHALK_CLIENT_SECRET"),
-        ],
         entrypoint=["python", "/app/server.py"],
         port=8080,
+        chalk_identity=True,
         readiness_probe=ReadinessProbe.http("/healthz"),
         min_replicas=1,
         max_replicas=1,

@@ -38,3 +38,10 @@ FROM (SELECT ts, service, catalog_call('function.log-pii-redact', message) AS r 
 ## License
 
 Apache-2.0. The base model, `distilbert/distilbert-base-cased`, is Apache-2.0; the fine-tuned weights are trained only on the synthetic data `synth.py` generates.
+
+## Local authentication
+
+The SDK reads credentials, API host, and the selected environment from your existing
+`chalk login` in `~/.chalk.yml`, including project-scoped and default logins.
+For unattended runs, `CHALK_CLIENT_ID` and `CHALK_CLIENT_SECRET` remain supported. Where available, `--env-id`
+overrides the target environment; otherwise the SDK uses your login or environment settings.
