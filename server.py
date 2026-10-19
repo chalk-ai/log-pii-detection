@@ -12,9 +12,7 @@
 from __future__ import annotations
 
 import asyncio
-import base64
 import collections
-import io
 import json
 import os
 import pathlib
@@ -24,8 +22,6 @@ import time
 from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator
 
-import httpx
-import pyarrow.parquet as pq
 import torch
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
@@ -94,49 +90,19 @@ class RateLimiter:
 
 
 class ChalkSql:
-    """Minimal ChalkSQL client over Connect JSON, with a cached client-credentials token."""
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.api = os.environ["CHALK_API_SERVER"].rstrip("/")
-        self.env = os.environ["CHALK_ENVIRONMENT_ID"]
-        self._client_id = os.environ["CHALK_CLIENT_ID"]
-        self._secret = os.environ["CHALK_CLIENT_SECRET"]
-        self._http = httpx.Client(timeout=httpx.Timeout(120.0, connect=10.0))
-        self._token, self._expiry = "", 0.0
-
-    def _bearer(self) -> str:
-        if time.time() > self._expiry - 300:
-            r = self._http.post(
-                f"{self.api}/v1/oauth/token",
-                json={"client_id": self._client_id, "client_secret": self._secret, "grant_type": "client_credentials"},
-            )
-            r.raise_for_status()
-            body = r.json()
-            self._token, self._expiry = body["access_token"], time.time() + float(body.get("expires_in", 3600))
-        return self._token
+    """ChalkSQL authenticated by the SDK, including rotating workload identity."""
 
     def query(self, sql: str) -> dict[str, Any]:
+        from chalkcompute import SQLClient
+
         started = time.monotonic()
-        r = self._http.post(
-            f"{self.api}/chalk.protosql.v1.SqlService/ExecuteSqlQuery",
-            headers={
-                "Authorization": f"Bearer {self._bearer()}",
-                "X-Chalk-Env-Id": self.env,
-                "x-chalk-deployment-type": "engine-grpc",
-                "Content-Type": "application/json",
-            },
-            json={"query": sql, "syncOptions": {}},
-        )
-        body = r.json()
-        if "parquet" not in body:
-            errors = body.get("errors") or [{"message": body.get("message") or json.dumps(body)[:300]}]
-            raise RuntimeError(errors[0].get("message") or "query failed")
-        table = pq.read_table(io.BytesIO(base64.b64decode(body["parquet"])))
+        with SQLClient() as client:
+            result = client.query(sql, timeout=120)
+            table = result.to_arrow()
         return {
             "columns": table.column_names,
             "rows": table.to_pylist(),
-            "query_id": body.get("queryId"),
+            "query_id": result.query_id,
             "elapsed_ms": round((time.monotonic() - started) * 1000),
         }
 
