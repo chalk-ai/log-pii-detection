@@ -23,11 +23,9 @@ HERE = pathlib.Path(__file__).resolve().parent
 MODEL_DIR = "/models/log-pii"
 
 
-def load_chalk_env(env_id: str | None) -> None:
+def load_chalk_env() -> None:
     from chalkcompute import ConnectClient
 
-    if env_id:
-        os.environ["CHALK_ENVIRONMENT"] = env_id
     client = ConnectClient()
     try:
         client._ensure_auth()
@@ -39,14 +37,11 @@ def load_chalk_env(env_id: str | None) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", default="log-pii-detection")
-    parser.add_argument("--env-id", default=None)
     parser.add_argument("--model-dir", type=pathlib.Path, required=True)
     parser.add_argument("--table-uri", required=True)
-    parser.add_argument("--ready-timeout", type=float, default=1200.0)
     args = parser.parse_args()
 
-    load_chalk_env(args.env_id)
+    load_chalk_env()
     env_id = os.environ["CHALK_ENVIRONMENT_ID"]
     from chalkcompute import Image, ReadinessProbe, ScalingGroup
 
@@ -74,7 +69,7 @@ def main() -> None:
     )
     sg = ScalingGroup(
         image=image,
-        name=args.name,
+        name='log-pii-detection',
         cpu="2",
         memory="4Gi",
         env={
@@ -94,7 +89,7 @@ def main() -> None:
         min_replicas=1,
         max_replicas=1,
     )
-    sg.deploy(build_timeout=1800.0, ready_timeout=args.ready_timeout)
+    sg.deploy(build_timeout=1800.0, ready_timeout=1200.0)
     print("web_url:", sg.web_url)
 
 

@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import threading
 from collections import Counter
 from pathlib import Path
@@ -55,11 +54,8 @@ def log_pii_redact(line: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env-id", default=None)
     parser.add_argument("--model-dir", type=Path, required=True)
     args = parser.parse_args()
-    if args.env_id:
-        os.environ["CHALK_ENVIRONMENT"] = args.env_id
     import chalkcompute
     from chalkcompute import Image, RemoteFunction
 
