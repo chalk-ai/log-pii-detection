@@ -16,23 +16,10 @@ Chalk workload identity:
 from __future__ import annotations
 
 import argparse
-import os
 import pathlib
 
 HERE = pathlib.Path(__file__).resolve().parent
 MODEL_DIR = "/models/log-pii"
-
-
-def load_chalk_env() -> None:
-    from chalkcompute import ConnectClient
-
-    client = ConnectClient()
-    try:
-        client._ensure_auth()
-        os.environ["CHALK_API_SERVER"] = client._api_server
-        os.environ["CHALK_ENVIRONMENT_ID"] = client._env_id
-    finally:
-        client.close()
 
 
 def main() -> None:
@@ -41,8 +28,6 @@ def main() -> None:
     parser.add_argument("--table-uri", required=True)
     args = parser.parse_args()
 
-    load_chalk_env()
-    env_id = os.environ["CHALK_ENVIRONMENT_ID"]
     from chalkcompute import Image, ReadinessProbe, ScalingGroup
 
     image = (
@@ -73,8 +58,6 @@ def main() -> None:
         cpu="2",
         memory="4Gi",
         env={
-            "CHALK_API_SERVER": os.environ["CHALK_API_SERVER"],
-            "CHALK_ENVIRONMENT_ID": env_id,
             "LOG_PII_MODEL_DIR": MODEL_DIR,
             "LOG_PII_TABLE_URI": args.table_uri,
             "LOG_PII_THREADS": "2",
